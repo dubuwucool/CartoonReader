@@ -1,0 +1,37 @@
+  public static List<News> parsePull(InputStream inputStream) throws Exception {
+        List<News> list = null;
+        News mNews = null;
+        XmlPullParserFactory xmlPullParserFactory = XmlPullParserFactory.newInstance();
+        XmlPullParser parser = xmlPullParserFactory.newPullParser();
+        parser.setInput(inputStream, "utf-8");
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+                case XmlPullParser.START_DOCUMENT:
+                    list = new ArrayList<>();
+                    break;
+                case XmlPullParser.START_TAG:
+                    if ("news".equals(parser.getName())) {
+                        mNews = new News();
+                    } else if ("title".equals(parser.getName())) {
+                        mNews.setTitle(parser.nextText());
+                    } else if ("detail".equals(parser.getName())) {
+                        mNews.setDetail(parser.nextText());
+                    } else if ("comment".equals(parser.getName())) {
+                        mNews.setComment(parser.nextText());
+                    } else if ("image".equals(parser.getName())) {
+                        mNews.setPic(parser.nextText());
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    if ("news".equals(parser.getName())) {
+                        list.add(mNews);
+                        mNews = null;
+                    }
+                    break;
+            }
+            eventType = parser.next();
+        }
+
+        return list;
+    }
